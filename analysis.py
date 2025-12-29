@@ -31,10 +31,21 @@ def get_username():
     return generate_username()[0]
 
 
+# Greet user
 def greet_user(name):
     # Greet the user
     print("Hello " + name)
+
+# Get text from file
+def getArticleText():
+    f = open("files/article.txt", "r")
+    rawText = f.read()
+    f.close()
+    return rawText.replace("\n", " ").replace("\n", "")
     
-welcome_user()
-username = get_username()
-greet_user(username)
+# welcome_user()
+# username = get_username()
+# greet_user(username)
+
+articleTextRaw = getArticleText()
+print(articleTextRaw)
