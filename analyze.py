@@ -69,5 +69,3 @@ articleSentences = tokenizeSentences(articleTextRaw)
 articleWords = tokenizeWords(articleSentences)
 
 print(articleWords)
-# for sentenceText in articleSentences:
-#     print(sentenceText + "\n")
