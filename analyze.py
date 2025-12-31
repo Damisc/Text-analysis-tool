@@ -1,5 +1,9 @@
 from random_username.generate import generate_username
+import nltk
 from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.stem import WordNetLemmatizer
+nltk.download("wordnet")
+wordLematizer = WordNetLemmatizer()
 import re
 
 
@@ -79,7 +83,7 @@ def cleanseWordList(words):
     for word in words:
         cleansedWord = word.replace(".", "").lower()
         if (not re.search(invalidWordPattern, cleansedWord)) and len(word) > 1:
-            cleansedWords.append(cleansedWord)
+            cleansedWords.append(wordLematizer.lemmatize(cleansedWord))
     return cleansedWords
 
 # Get user details
