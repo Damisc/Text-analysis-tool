@@ -5,13 +5,16 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet, stopwords
 from wordcloud import WordCloud
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
 nltk.download("stopwords")
 nltk.download("wordnet")
 nltk.download("averaged_perceptron_tagger_eng")
+nltk.download("vader_lexicon")
 wordLematizer = WordNetLemmatizer()
 stopWords = set(stopwords.words("english"))
+sentimentAnalyzer = SentimentIntensityAnalyzer()
 
 
 
@@ -115,9 +118,9 @@ def cleanseWordList(posTaggedWordTuples):
 
 
 # Get user details
-# welcome_user()
-# username = get_username()
-# greet_user(username)
+welcome_user()
+username = get_username()
+greet_user(username)
 
 # Extract and tokenize text
 articleTextRaw = getArticleText()
@@ -138,6 +141,9 @@ seperator = " "
 wordcloud = WordCloud(width = 1000, height = 700, random_state = 1, background_color = "white", colormap = "tab20", collocations = False).generate(seperator.join(articleWordsCleansed))
 wordcloud.to_file("results/wordcloud.png")
 
+# Run sentiment analysis
+sentimentResult = sentimentAnalyzer.polarity_scores(articleTextRaw)
+
 # Printing to test code
-print("Done")
+print(sentimentResult)
 
