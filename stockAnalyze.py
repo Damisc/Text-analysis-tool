@@ -35,28 +35,44 @@ def getEarningsDates(company):
 def getCompanyNews(company):
     newsList = company.news
     allNewsArticles = []
+
     for newsDict in newsList:
+        content = newsDict.get("content", {})
+        url = None
+        if content.get("clickThroughUrl"):
+            url = content["clickThroughUrl"]["url"]
+        elif content.get("canonicalUrl"):
+            url = content["canonicalUrl"]["url"]
+        elif content.get("previewUrl"):
+            url = content["previewUrl"]
+
         newsDictToAdd = {
             "title": newsDict["content"]["title"],
-            "link": newsDict["content"]["previewUrl"]
+            "link": url,
         }
-        if newsDictToAdd["link"] != None:
-            allNewsArticles.append(newsDictToAdd)
+        allNewsArticles.append(newsDictToAdd)
     return allNewsArticles
+
+def extractNewsArticleTextFromHtml(soup):
+    allText = ""
+    result = soup.find_all("div", {"class":"body yf-v6n2s3"})
+    for res in result:
+        allText += res.text
+    return allText
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0"
 }
 def extractCompanyNewsArticle(newsArticles):
+    allArticlesText = ""
     for newsArticle in newsArticles:
         url = newsArticle["link"]
         page = requests.get(url, headers=headers)
         soup = BeautifulSoup(page.text, "html.parser")
 
-        if soup.find_all(string="Continue reading"):
-            print("Tag found - shouls Skip")
-        else:
-            print("Tag not found don't skip")
+        if not soup.find("div", class_="continue-reading yf-7fhdv6"):
+            allArticlesText += extractNewsArticleTextFromHtml(soup)
+    return allArticlesText
 
 def getCompanyStockInfo(tickerSymbol):
     # get data from yahoo finance API
@@ -67,7 +83,7 @@ def getCompanyStockInfo(tickerSymbol):
     priceHistory = getpriceHistory(company)
     futureEarningsDates = getEarningsDates(company)
     newsArticles = getCompanyNews(company)
-    extractCompanyNewsArticle(newsArticles)
-    
+    newsArticleAllText = extractCompanyNewsArticle(newsArticles)
+    print(newsArticleAllText)
 
-getCompanyStockInfo("MSFT")
+getCompanyStockInfo("NVDA")
