@@ -116,50 +116,51 @@ def cleanseWordList(posTaggedWordTuples):
     return cleansedWords
 
 
-# Get user details
-welcome_user()
-username = get_username()
-greet_user(username)
 
-# Extract and tokenize text
-articleTextRaw = getArticleText()
-articleSentences = tokenizeSentences(articleTextRaw)
-articleWords = tokenizeWords(articleSentences)
+def analyzeText(textToAnalyze):
+    articleSentences = tokenizeSentences(textToAnalyze)
+    articleWords = tokenizeWords(articleSentences)
 
-# Analytics
-stockSearchPattern = "[0-9]|[%$€£]|thousand|million|billion|trillion|profit|loss/g"
-keySentences = extractKeySentences(articleSentences, stockSearchPattern)
-wordsPerSentence = getWordsPerSentence(articleSentences)
+    # Analytics
+    stockSearchPattern = "[0-9]|[%$€£]|thousand|million|billion|trillion|profit|loss/g"
+    keySentences = extractKeySentences(articleSentences, stockSearchPattern)
+    wordsPerSentence = getWordsPerSentence(articleSentences)
 
-# Get word analytics
-wordsPosTagged = nltk.pos_tag(articleWords)
-articleWordsCleansed = cleanseWordList(wordsPosTagged)
+    # Get word analytics
+    wordsPosTagged = nltk.pos_tag(articleWords)
+    articleWordsCleansed = cleanseWordList(wordsPosTagged)
 
-# Generate word cloud
-seperator = " "
-wordCloudFilePath = "results/wordcloud.png"
-wordcloud = WordCloud(width = 1000, height = 700, random_state = 1, background_color = "white", colormap = "tab20", collocations = False).generate(seperator.join(articleWordsCleansed))
-wordcloud.to_file(wordCloudFilePath)
+    # Generate word cloud
+    seperator = " "
+    wordCloudFilePath = "results/wordcloud.png"
+    wordcloud = WordCloud(width = 1000, height = 700, random_state = 1, background_color = "white", colormap = "tab20", collocations = False).generate(seperator.join(articleWordsCleansed))
+    wordcloud.to_file(wordCloudFilePath)
 
-# Run sentiment analysis
-sentimentResult = sentimentAnalyzer.polarity_scores(articleTextRaw)
+    # Run sentiment analysis
+    sentimentResult = sentimentAnalyzer.polarity_scores(textToAnalyze)
 
-# collate analysis into one dictionary
-finalResult = {
-    "username": username,
-    "data":{
-        "keySentences": keySentences,
-        "wordsPerSentence": round(wordsPerSentence, 1),
-        "sentiment": sentimentResult,
-        "wordCloudFilePath": wordCloudFilePath
-    },
-    "metadata":{
-        "sentencesAnalyzed" : len(articleSentences),
-        "wordsAnalyzed" : len(articleWordsCleansed)
+    # collate analysis into one dictionary
+    finalResult = {
+        "data":{
+            "keySentences": keySentences,
+            "wordsPerSentence": round(wordsPerSentence, 1),
+            "sentiment": sentimentResult,
+            "wordCloudFilePath": wordCloudFilePath
+        },
+        "metadata":{
+            "sentencesAnalyzed" : len(articleSentences),
+            "wordsAnalyzed" : len(articleWordsCleansed)
+        }
     }
-}
-finalResultJson = json.dumps(finalResult, indent=4)
+    return finalResult
 
-# Printing to test code
-print(finalResultJson)
+def runAsFile():
+    # Get user details
+    welcome_user()
+    username = get_username()
+    greet_user(username)
+    analyzeText(articleTextRaw)
+
+    # Extract and tokenize text
+    articleTextRaw = getArticleText()
 

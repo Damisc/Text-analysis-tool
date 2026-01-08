@@ -1,7 +1,9 @@
+import json
 import yfinance as yf
 import requests
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
+import analyze
 
 def extractBasicInfo(data):
     keysToExtract = [ "longName", "website", "sector", "fullTimeEmployees", "marketCap", "totalRevenue", "trailingEps"]
@@ -84,6 +86,10 @@ def getCompanyStockInfo(tickerSymbol):
     futureEarningsDates = getEarningsDates(company)
     newsArticles = getCompanyNews(company)
     newsArticleAllText = extractCompanyNewsArticle(newsArticles)
-    print(newsArticleAllText)
+    newsTextAnalysis = analyze.analyzeText(newsArticleAllText)
+
+    finalResulJson = json.dumps(newsTextAnalysis, indent=4)
+
+    print(finalResulJson)
 
 getCompanyStockInfo("NVDA")
