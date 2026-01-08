@@ -11,9 +11,9 @@ app = Flask(__name__)
 def healthCheck():
     return "Flask Server is up and Running"
 
-@app.route("/analyze-stock")
-def analyzeStock():
-    return {"data": "analysis coming soon"}
+@app.route("/analyze-stock/<ticker>")
+def analyzeStock(ticker):
+    return {"data": "analysis for " + ticker + " coming soon"}
 
 # main driver function
 if __name__ == "__main__":
