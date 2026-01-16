@@ -1,3 +1,5 @@
+import base64
+from io import BytesIO
 from random_username.generate import generate_username
 import re, nltk, json
 from nltk.tokenize import word_tokenize, sent_tokenize
@@ -134,7 +136,13 @@ def analyzeText(textToAnalyze):
     seperator = " "
     wordCloudFilePath = "results/wordcloud.png"
     wordcloud = WordCloud(width = 1000, height = 700, random_state = 1, background_color = "white", colormap = "tab20", collocations = False).generate(seperator.join(articleWordsCleansed))
-    wordcloud.to_file(wordCloudFilePath)
+    # wordcloud.to_file(wordCloudFilePath)
+
+    imgIo = BytesIO()
+    wordcloud.to_image().save(imgIo, format="PNG")
+    imgIo.seek(0)
+
+    encodedWordCloud = base64.b64encode(imgIo.getvalue()).decode("utf-8") 
 
     # Run sentiment analysis
     sentimentResult = sentimentAnalyzer.polarity_scores(textToAnalyze)
@@ -145,7 +153,8 @@ def analyzeText(textToAnalyze):
             "keySentences": keySentences,
             "wordsPerSentence": round(wordsPerSentence, 1),
             "sentiment": sentimentResult,
-            "wordCloudFilePath": wordCloudFilePath
+            "wordCloudFilePath": wordCloudFilePath,
+            "wordCloudImage": encodedWordCloud
         },
         "metadata":{
             "sentencesAnalyzed" : len(articleSentences),
